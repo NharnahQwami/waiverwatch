@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Waiver Watch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+:root{
+  --bg:#FBFBF9; --ink:#15181A; --muted:#6B7176; --line:#E6E7E3; --accent:#1E5A44; --accent-soft:#E6F0EB;
+  --sans:"Geist", "Segoe UI", system-ui, sans-serif; --mono:"Geist Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){color-scheme:dark;--bg:#111413;--ink:#E7EAE8;--muted:#8D9592;--line:#252A28;--accent:#7FC4A6;--accent-soft:#16261F}
+}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#111413;--ink:#E7EAE8;--muted:#8D9592;--line:#252A28;--accent:#7FC4A6;--accent-soft:#16261F}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55}
+main{max-width:680px;margin:0 auto;padding-inline:16px;padding-block:56px 72px}
+h1{font-size:26px;font-weight:600;letter-spacing:-.02em;margin:0}
+.lede{color:var(--muted);margin:6px 0 0;max-width:56ch}
+
+form{margin-top:28px;display:flex;gap:8px;flex-wrap:wrap}
+form input{flex:1 1 240px;min-width:0;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--ink)}
+form button{font:inherit;font-weight:500;padding:10px 16px;border:0;border-radius:6px;background:var(--ink);color:var(--bg);cursor:pointer}
+form button:hover{opacity:.88}
+.formnote{font-size:13px;color:var(--muted);margin:8px 0 0;min-height:1.4em}
+.formnote.ok{color:var(--accent)}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.finder{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:8px;margin-top:44px}
+.finder input,.finder select{font:inherit;font-size:14px;min-width:0;width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+.finder select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:560px){.finder{grid-template-columns:1fr 1fr}.finder input{grid-column:1/-1}}
+nav{display:flex;gap:4px;flex-wrap:wrap;margin-top:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.clear{font:inherit;font-size:13px;border:0;background:none;color:var(--accent);cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px}
+nav button{font:inherit;font-size:13px;padding:5px 10px;border:0;border-radius:99px;background:transparent;color:var(--muted);cursor:pointer}
+nav button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:500}
+nav .n{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);align-self:center}
+
+ol{list-style:none;margin:0;padding:0}
+li{display:grid;grid-template-columns:76px 1fr;gap:16px;padding:18px 0;border-bottom:1px solid var(--line)}
+.date{font-family:var(--mono);font-size:13px;color:var(--muted);line-height:1.4;padding-top:2px;font-variant-numeric:tabular-nums}
+.date b{display:block;font-weight:500;color:var(--ink);font-size:15px}
+.school{font-weight:600;margin:0}
+.meta{font-size:13px;color:var(--muted);margin:2px 0 6px}
+.waiver{margin:0}
+.waiver strong{font-weight:500;color:var(--accent)}
+.more{font-size:13px;color:var(--muted);margin:6px 0 0}
+.row{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:13px}
+.row a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.row a:hover{text-decoration-color:var(--accent)}
+.empty{color:var(--muted);padding:28px 0}
+
+footer{margin-top:40px;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+@media (max-width:480px){li{grid-template-columns:1fr;gap:6px}.date b{display:inline;margin-right:6px}}
+</style>
+</head>
+<body>
+
+<main>
+  <h1>Waiver Watch</h1>
+  <p class="lede">Upcoming university events in the US and Canada where attending gets your application fee waived. Only events still ahead, from pages checked in the last 30 days.</p>
+
+  <form id="signup" novalidate>
+    <input id="email" type="email" placeholder="you@email.com" aria-label="Email address" autocomplete="email" required>
+    <button type="submit">Get the weekly list</button>
+  </form>
+  <p class="formnote" id="formnote">One email every Monday with new waiver events. Unsubscribe anytime.</p>
+
+  <div class="finder">
+    <input id="school" type="search" placeholder="Search schools or programs" aria-label="Search schools or programs" autocomplete="off">
+    <select id="region" aria-label="Region">
+      <option value="all">All regions</option>
+      <optgroup label="United States">
+        <option value="US">All of the US</option>
+        <option value="Northeast">Northeast</option>
+        <option value="Midwest">Midwest</option>
+        <option value="South">South</option>
+        <option value="West">West</option>
+      </optgroup>
+      <optgroup label="Canada">
+        <option value="CA">All of Canada</option>
+        <option value="Atlantic">Atlantic Canada</option>
+        <option value="Central">Ontario &amp; Quebec</option>
+        <option value="Prairies">Prairies</option>
+        <option value="Pacific">British Columbia</option>
+      </optgroup>
+    </select>
+    <select id="state" aria-label="State or province"><option value="all">Any state / province</option></select>
+  </div>
+
+  <nav id="filters" aria-label="Filter events">
+    <button data-f="all" aria-pressed="true">All</button>
+    <button data-f="Graduate" aria-pressed="false">Graduate</button>
+    <button data-f="Undergraduate" aria-pressed="false">Undergraduate</button>
+    <button data-f="virtual" aria-pressed="false">Online</button>
+    <button data-f="in-person" aria-pressed="false">In person</button>
+    <span class="n" id="count"></span>
+  </nav>
+
+  <ol id="list"></ol>
+
+  <footer>
+    <span id="checked"></span>
+    <span>Always confirm on the school's page before you apply. Register with the same name and email you'll use on your application, and don't pay the fee first: waivers are not refunded.</span>
+  </footer>
+</main>
+
+<script>
+/* ==== CONFIG: updated by the weekly refresh ==== */
+const CHECKED = "2026-09-27";
+const SUBSCRIBE_URL = ""; // newsletter signup page; set once a mailing service is connected
+/* ==== EVENTS (only upcoming, only fresh pages) ==== */
+const EVENTS = [
+  {school:"Purdue University",unit:"College of Engineering",c:"US",st:"IN",level:"Graduate",fmt:"virtual",dates:["2026-09-28"],event:"Virtual Graduate Showcase",waiver:"Waiver earned by answering the platform questions by 12 Oct",note:"One waiver per person. Applies to College of Engineering graduate programs.",url:"https://engineering.purdue.edu/Engr/Academics/Graduate/graduate-showcase"},
+  {school:"Stevens Institute of Technology",unit:"Graduate Admissions",c:"US",st:"NJ",level:"Graduate",fmt:"virtual",dates:["2026-09-29"],event:"Online Application Workshop",waiver:"All event attendees get a waiver",note:"",url:"https://www.stevens.edu/admission-aid/graduate-admissions/graduate-events-and-open-houses"},
+  {school:"Bucknell University",unit:"Undergraduate Admissions",c:"US",st:"PA",level:"Undergraduate",fmt:"in-person",dates:["2026-10-03","2026-10-24"],event:"Fall Open House",waiver:"Waiver applied after your visit; redemption steps come by email",note:"",url:"https://www.bucknell.edu/admissions-aid/plan-visit/open-houses/fall-open-houses"},
+  {school:"Oakland University",unit:"Graduate School",c:"US",st:"MI",level:"Graduate",fmt:"virtual",dates:["2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09"],event:"Virtual Graduate Open Houses (one day per field)",waiver:"Register and attend one session for a waiver code (most programs)",note:"Health 5 Oct · Engineering/CS & Nursing 6 Oct · Education 7 Oct · Arts & Sciences 8 Oct · Business 9 Oct",url:"https://www.oakland.edu/grad/events/graduate-open-houses/"},
+  {school:"Wright State University",unit:"Graduate Programs",c:"US",st:"OH",level:"Graduate",fmt:"in-person",dates:["2026-10-06"],event:"Graduate Programs Open House, 4–6pm",waiver:"$40 fee waived, one per attendee",note:"",url:"https://www.wright.edu/graduate-programs-and-honors-studies/about/graduate-programs-open-house"},
+  {school:"Washington University in St. Louis",unit:"McKelvey School of Engineering",c:"US",st:"MO",level:"Graduate",fmt:"virtual",dates:["2026-10-07","2026-10-21","2026-11-10","2026-11-20"],event:"Departmental virtual info sessions",waiver:"Attend any info session (not the Cram Session)",note:"BME PhD 7 Oct · CSE PhD 21 Oct · CSE MS 10 Nov · ME MS 20 Nov, plus more on the schedule. Times in US Central.",url:"https://engineering.washu.edu/academics/graduate-admissions/recruitment-schedule.html"},
+  {school:"Stevens Institute of Technology",unit:"Graduate Admissions",c:"US",st:"NJ",level:"Graduate",fmt:"in-person",dates:["2026-10-08"],event:"Graduate Open House, Hoboken campus",waiver:"All event attendees get a waiver",note:"",url:"https://www.stevens.edu/admission-aid/graduate-admissions/graduate-events-and-open-houses"},
+  {school:"University of Michigan",unit:"School of Information",c:"US",st:"MI",level:"Graduate",fmt:"virtual",dates:["2026-10-09","2026-12-18"],event:"Apply to / Explore the MSI and MHI sessions",waiver:"Attend live; waiver sent after the session",note:"Recurring through spring 2027 for the Fall 2027 cycle.",url:"https://sessions.studentlife.umich.edu/list?department=10"},
+  {school:"University of Pittsburgh",unit:"School of Computing and Information",c:"US",st:"PA",level:"Graduate",fmt:"virtual",dates:["2026-10-13","2026-10-15","2026-10-16","2026-10-22","2026-11-20","2026-12-18"],event:"Master's and PhD virtual info sessions",waiver:"Attend the full presentation; $85 fee waived",note:"PhD 13 & 22 Oct · Master's 15 Oct · MS Info Science 16 Oct, 20 Nov, 18 Dec. Times ET.",url:"https://www.sci.pitt.edu/admissions/information-sessions"},
+  {school:"George Washington University",unit:"Columbian College of Arts & Sciences",c:"US",st:"DC",level:"Graduate",fmt:"virtual",dates:["2026-10-19","2026-10-30"],range:true,event:"Graduate Programs Virtual Open House",waiver:"Attend one session and apply by your deadline",note:"The only way to get a CCAS fee waiver. 90+ programs.",url:"https://columbian.gwu.edu/graduate-programs-virtual-open-house"},
+  {school:"Towson University",unit:"College of Graduate Studies",c:"US",st:"MD",level:"Graduate",fmt:"in-person",dates:["2026-10-24"],event:"Graduate Studies Open House, 10am–12pm",waiver:"Attendees eligible for a graduate fee waiver",note:"",url:"https://www.towson.edu/academics/graduate/admissions/events.html"},
+  {school:"UMass Lowell",unit:"Undergraduate Admissions",c:"US",st:"MA",level:"Undergraduate",fmt:"in-person",dates:["2026-10-24","2026-11-14"],event:"Open House",waiver:"Waiver emailed to your registration address",note:"Also a $1,000 visit award for fall 2027 first-year and transfer students who check in.",url:"https://www.uml.edu/admissions/visit/open-house/"},
+  {school:"Penn State Harrisburg",unit:"Undergraduate Admissions",c:"US",st:"PA",level:"Undergraduate",fmt:"in-person",dates:["2026-10-24"],event:"Undergraduate Open House, 9:30am",waiver:"Open house attendees receive a waiver",note:"",url:"https://harrisburg.psu.edu/open-house"},
+  {school:"George Brown Polytechnic",unit:"Toronto",c:"CA",st:"ON",level:"Undergraduate",fmt:"in-person",dates:["2026-10-24"],event:"In-Person Open House, 10am–2pm",waiver:"On-site OCAS voucher waives the C$150 Ontario Colleges fee",note:"For eligible attendees. A polytechnic rather than a university.",url:"https://www.georgebrown.ca/openhouse"},
+  {school:"University of King's College",unit:"Halifax",c:"CA",st:"NS",level:"Undergraduate",fmt:"in-person",dates:["2026-10-25"],event:"Fall Open House, 9:30am–3:15pm",waiver:"C$65 waiver on a September 2027 application",note:"Grade 12 students only. Attendance checked before a decision is released.",url:"https://ukings.ca/events/fall-open-house-2026/"},
+  {school:"University of Pittsburgh",unit:"Katz Graduate School of Business",c:"US",st:"PA",level:"Graduate",fmt:"virtual",dates:["2026-11-02"],event:"Pitt / GMAC online info session",waiver:"Register for an online info session and the fee is waived",note:"",url:"https://www.business.pitt.edu/katz-admissions/attend-an-event/"},
+  {school:"University of Wisconsin–Milwaukee",unit:"Graduate School",c:"US",st:"WI",level:"Graduate",fmt:"in-person",dates:["2026-11-05"],event:"Graduate Open House, 5–7pm",waiver:"Grad School pays your fee if you attend in person",note:"Start your application between 15 Aug 2026 and 31 Mar 2027. Virtual info sessions also qualify.",url:"https://uwm.edu/graduateschool/openhouse/"},
+  {school:"West Chester University",unit:"Graduate Admissions",c:"US",st:"PA",level:"Graduate",fmt:"in-person",dates:["2026-11-10"],event:"Graduate Open House, 5:30–7pm",waiver:"$50 fee waived for attending",note:"Not valid for SLP, Athletic Training, PA or Dietetic Internship programs.",url:"https://www.wcupa.edu/_admissions/SCH_DGR/openHouses.aspx"},
+];
+
+const today = new Date(); today.setHours(0,0,0,0);
+const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const parse = s => { const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); };
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function nextDate(e){
+  if(e.range){ const end=parse(e.dates[1]); if(end<today) return null; const start=parse(e.dates[0]); return start<today?today:start; }
+  const up=e.dates.map(parse).filter(d=>d>=today);
+  return up.length?up[0]:null;
+}
+const REGION = {
+  Northeast:["CT","ME","MA","NH","RI","VT","NJ","NY","PA"],
+  Midwest:["IL","IN","MI","OH","WI","IA","KS","MN","MO","NE","ND","SD"],
+  South:["DE","DC","FL","GA","MD","NC","SC","VA","WV","AL","KY","MS","TN","AR","LA","OK","TX"],
+  West:["AZ","CO","ID","MT","NV","NM","UT","WY","AK","CA","HI","OR","WA"],
+  Atlantic:["NB","NS","PE","NL"], Central:["ON","QC"], Prairies:["MB","SK","AB"], Pacific:["BC"]
+};
+const PLACE = {AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",DC:"Washington, DC",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming",
+  AB:"Alberta",BC:"British Columbia",MB:"Manitoba",NB:"New Brunswick",NL:"Newfoundland and Labrador",NS:"Nova Scotia",ON:"Ontario",PE:"Prince Edward Island",QC:"Quebec",SK:"Saskatchewan"};
+const place = e => PLACE[e.st] || e.st;
+const inRegion = (e,r) => r==="all" || e.c===r || (REGION[r]||[]).includes(e.st) && (r in {Atlantic:1,Central:1,Prairies:1,Pacific:1} ? e.c==="CA" : e.c==="US");
+
+let filter="all";
+const ui={school:document.getElementById("school"),region:document.getElementById("region"),state:document.getElementById("state")};
+const upcoming = () => EVENTS.map(e=>({e,d:nextDate(e)})).filter(r=>r.d);
+
+function fillStates(){
+  const keep=ui.state.value;
+  const sts=[...new Set(upcoming().map(r=>r.e).filter(e=>inRegion(e,ui.region.value)).map(e=>e.c+"|"+e.st))]
+    .map(k=>{const [c,st]=k.split("|");return {c,st,name:PLACE[st]||st};})
+    .sort((a,b)=>a.c.localeCompare(b.c)||a.name.localeCompare(b.name));
+  ui.state.innerHTML=`<option value="all">Any state / province</option>`+sts.map(s=>`<option value="${s.c}|${s.st}">${esc(s.name)}${s.c==="CA"?", Canada":""}</option>`).join("");
+  ui.state.value=[...ui.state.options].some(o=>o.value===keep)?keep:"all";
+}
+
+function render(){
+  const q=ui.school.value.trim().toLowerCase(), region=ui.region.value, st=ui.state.value;
+  const rows=upcoming()
+    .filter(({e})=>filter==="all"||e.level===filter||e.fmt===filter)
+    .filter(({e})=>inRegion(e,region))
+    .filter(({e})=>st==="all"||(e.c+"|"+e.st)===st)
+    .filter(({e})=>!q||q.split(/\s+/).every(w=>[e.school,e.unit,e.event,e.note,place(e)].join(" ").toLowerCase().includes(w)))
+    .sort((a,b)=>a.d-b.d||a.e.school.localeCompare(b.e.school));
+  const active=q||region!=="all"||st!=="all"||filter!=="all";
+  document.getElementById("count").textContent=`${rows.length} upcoming`;
+  document.getElementById("list").innerHTML=rows.length?rows.map(({e,d})=>{
+    const extra=e.range?`to ${parse(e.dates[1]).getDate()} ${MONTHS[parse(e.dates[1]).getMonth()]}`:
+      (e.dates.filter(x=>parse(x)>d).length?`+${e.dates.filter(x=>parse(x)>d).length} more`:"");
+    return `<li>
+      <div class="date"><b>${d.getDate()} ${MONTHS[d.getMonth()]}</b>${esc(extra)}</div>
+      <div>
+        <p class="school">${esc(e.school)}</p>
+        <p class="meta">${esc(e.unit)} · ${esc(place(e))}, ${e.c==="CA"?"Canada":"US"} · ${esc(e.level)} · ${e.fmt==="virtual"?"Online":"In person"}</p>
+        <p class="waiver">${esc(e.event)}. <strong>${esc(e.waiver)}.</strong></p>
+        ${e.note?`<p class="more">${esc(e.note)}</p>`:""}
+        <div class="row"><a href="${e.url}" target="_blank" rel="noopener">Event page ↗</a></div>
+      </div></li>`;
+  }).join(""):`<p class="empty">No upcoming events match these filters. ${active?'<button class="clear" id="clearAll" type="button">Clear filters</button>':""}</p>`;
+  const cb=document.getElementById("clearAll"); if(cb) cb.addEventListener("click",clearAll);
+}
+function clearAll(){
+  ui.school.value=""; ui.region.value="all"; filter="all";
+  document.querySelectorAll("#filters button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.f==="all"?"true":"false"));
+  fillStates(); ui.state.value="all"; render();
+}
+ui.school.addEventListener("input",render);
+ui.region.addEventListener("change",()=>{fillStates();render();});
+ui.state.addEventListener("change",render);
+document.getElementById("filters").addEventListener("click",ev=>{
+  const b=ev.target.closest("button"); if(!b) return;
+  document.querySelectorAll("#filters button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
+  filter=b.dataset.f; render();
+});
+const c=parse(CHECKED);
+document.getElementById("checked").textContent=`Last checked ${c.getDate()} ${MONTHS[c.getMonth()]} ${c.getFullYear()}. Refreshed every Monday; past events drop off automatically.`;
+
+const form=document.getElementById("signup"), note=document.getElementById("formnote");
+form.addEventListener("submit",ev=>{
+  ev.preventDefault();
+  const email=document.getElementById("email").value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ note.className="formnote"; note.textContent="Enter a valid email address, like name@gmail.com."; return; }
+  if(SUBSCRIBE_URL){
+    const a=document.createElement("a"); a.href=SUBSCRIBE_URL+(SUBSCRIBE_URL.includes("?")?"&":"?")+"email="+encodeURIComponent(email); a.target="_blank"; a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove();
+    note.className="formnote ok"; note.textContent="Almost done. Confirm your subscription in the tab that opened.";
+  } else {
+    note.className="formnote"; note.textContent="The mailing list opens soon. Bookmark this page in the meantime; it updates every Monday.";
+  }
+});
+fillStates();
+render();
+</script>
+</body>
+</html>
