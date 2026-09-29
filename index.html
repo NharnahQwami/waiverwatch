@@ -110,7 +110,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);display:flex;flex-direc
 </main>
 
 <script>
-/* ==== CONFIG: updated by the weekly refresh ==== */
+/* ==== CONFIG: updated by the daily refresh ==== */
 const CHECKED = "2026-09-28";
 const SUBSCRIBE_URL = ""; // newsletter signup page; set once a mailing service is connected
 /* ==== EVENTS (only upcoming, only fresh pages) ==== */
@@ -216,7 +216,7 @@ document.getElementById("filters").addEventListener("click",ev=>{
   filter=b.dataset.f; render();
 });
 const c=parse(CHECKED);
-document.getElementById("checked").textContent=`Last checked ${c.getDate()} ${MONTHS[c.getMonth()]} ${c.getFullYear()}. Refreshed every Monday; past events drop off automatically.`;
+document.getElementById("checked").textContent=`Last checked ${c.getDate()} ${MONTHS[c.getMonth()]} ${c.getFullYear()}. Refreshed daily; past events drop off automatically.`;
 
 const form=document.getElementById("signup"), note=document.getElementById("formnote");
 form.addEventListener("submit",ev=>{
@@ -227,7 +227,7 @@ form.addEventListener("submit",ev=>{
     const a=document.createElement("a"); a.href=SUBSCRIBE_URL+(SUBSCRIBE_URL.includes("?")?"&":"?")+"email="+encodeURIComponent(email); a.target="_blank"; a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove();
     note.className="formnote ok"; note.textContent="Almost done. Confirm your subscription in the tab that opened.";
   } else {
-    note.className="formnote"; note.textContent="The mailing list opens soon. Bookmark this page in the meantime; it updates every Monday.";
+    note.className="formnote"; note.textContent="The mailing list opens soon. Bookmark this page in the meantime; it updates daily.";
   }
 });
 fillStates();
