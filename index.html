@@ -54,6 +54,11 @@ li{display:grid;grid-template-columns:76px 1fr;gap:16px;padding:18px 0;border-bo
 .row a:hover{text-decoration-color:var(--accent)}
 .empty{color:var(--muted);padding:28px 0}
 
+.codes{margin-top:56px}
+h2{font-size:19px;font-weight:600;letter-spacing:-.01em;margin:0}
+.codes .lede{margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--line);max-width:none}
+.code{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--accent);background:var(--accent-soft);padding:2px 7px;border-radius:4px;user-select:all;word-break:break-all}
+
 footer{margin-top:40px;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
 @media (max-width:480px){li{grid-template-columns:1fr;gap:6px}.date b{display:inline;margin-right:6px}}
 </style>
@@ -103,6 +108,12 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);display:flex;flex-direc
 
   <ol id="list"></ol>
 
+  <section class="codes" aria-labelledby="codes-h">
+    <h2 id="codes-h">Public waiver codes</h2>
+    <p class="lede">Fee waiver codes that schools or state agencies publish openly for anyone who meets the terms. Codes handed out privately to event attendees are not listed here.</p>
+    <ol id="codes"></ol>
+  </section>
+
   <footer>
     <span id="checked"></span>
     <span>Always confirm on the school's page before you apply. Register with the same name and email you'll use on your application, and don't pay the fee first: waivers are not refunded.</span>
@@ -111,15 +122,16 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);display:flex;flex-direc
 
 <script>
 /* ==== CONFIG: updated by the daily refresh ==== */
-const CHECKED = "2026-10-10";
+const CHECKED = "2026-10-13";
 const SUBSCRIBE_URL = ""; // newsletter signup page; set once a mailing service is connected
 /* ==== EVENTS (only upcoming, only fresh pages) ==== */
 const EVENTS = [
-  {school:"Washington University in St. Louis",unit:"Sever Institute (McKelvey School of Engineering)",c:"US",st:"MO",level:"Graduate",fmt:"virtual",dates:["2026-10-12","2026-10-14","2026-10-26","2026-11-03","2026-11-11"],event:"Professional master's virtual info sessions",waiver:"Attendees are eligible for an application fee waiver for engineering graduate programs",note:"Construction Mgmt 12 Oct · Cybersecurity Mgmt 14 Oct · Engineering Mgmt (part-time) 26 Oct · Info Systems Mgmt (full-time) 3 Nov · Engineering Mgmt (full-time) 11 Nov. Times in US Central.",url:"https://happenings.washu.edu/department/sever_institute"},
+  {school:"Washington University in St. Louis",unit:"Sever Institute (McKelvey School of Engineering)",c:"US",st:"MO",level:"Graduate",fmt:"virtual",dates:["2026-10-14","2026-10-26","2026-11-03","2026-11-11"],event:"Professional master's virtual info sessions",waiver:"Attendees are eligible for an application fee waiver for engineering graduate programs",note:"Cybersecurity Mgmt 14 Oct · Engineering Mgmt (part-time) 26 Oct · Info Systems Mgmt (full-time) 3 Nov · Engineering Mgmt (full-time) 11 Nov. Times in US Central.",url:"https://happenings.washu.edu/department/sever_institute"},
   {school:"Wright State University",unit:"School of Professional Psychology (PsyD)",c:"US",st:"OH",level:"Graduate",fmt:"virtual",dates:["2026-10-13"],event:"SOPP Virtual Open House, 6–7pm",waiver:"SOPP application fee waived for attending one open house",note:"",url:"https://health-education-human-services.wright.edu/professional-psychology/open-house"},
   {school:"University of Pittsburgh",unit:"School of Computing and Information",c:"US",st:"PA",level:"Graduate",fmt:"virtual",dates:["2026-10-13","2026-10-15","2026-10-16","2026-10-22","2026-11-20","2026-12-18"],event:"Master's and PhD virtual info sessions",waiver:"Attend the full presentation; $85 fee waived",note:"PhD 13 & 22 Oct · Master's 15 Oct · MS Info Science 16 Oct, 20 Nov, 18 Dec. Times ET.",url:"https://www.sci.pitt.edu/admissions/information-sessions"},
   {school:"University of California, Riverside",unit:"Graduate Division",c:"US",st:"CA",level:"Graduate",fmt:"virtual",dates:["2026-10-13","2026-10-14"],event:"Grad Open House (virtual)",waiver:"$40 off the application fee, one per student",note:"Partial waiver. You must attend at least one Academic Program Session; participating programs only. International students eligible.",url:"https://apro.ucr.edu/gradopenhouse"},
   {school:"Touro University",unit:"Graduate School of Technology",c:"US",st:"NY",level:"Graduate",fmt:"virtual",dates:["2026-10-14","2026-10-15","2026-10-21","2026-10-22"],event:"GST Online Info Session (Zoom)",waiver:"$50 application fee waiver for all attendees",note:"14 and 21 Oct 7–8pm ET · 15 and 22 Oct 11:30am–12:30pm ET. Registration required.",url:"https://www.touro.edu/news--events/events/gst-online-info-session-101426.php"},
+  {school:"University of Maryland Global Campus",unit:"Financial aid webinar (undergraduate and graduate)",c:"US",st:"MD",level:"Undergraduate",fmt:"virtual",dates:["2026-10-14","2026-11-11","2026-12-09"],event:"Financial Solutions Webinar (Zoom), 5:30–6:15pm",waiver:"Attend and apply within 30 days to have the $50 application fee waived",note:"Applies to undergraduate and master's applications; the $100 doctoral fee is not waived. Monthly sessions 14 Oct, 11 Nov, 9 Dec.",url:"https://www.umgc.edu/events/event-detail.event-11-11-26-financial-solutions-webinar"},
   {school:"Villanova University",unit:"College of Liberal Arts and Sciences, Graduate Studies",c:"US",st:"PA",level:"Graduate",fmt:"virtual",dates:["2026-10-14","2026-10-22","2026-10-28","2026-11-11","2026-11-17","2026-12-09"],event:"Virtual info sessions (general and program-specific)",waiver:"All attendees receive an application fee waiver code",note:"HRD and MPA sessions 14 Oct · Finding Your Balance 22 Oct · Application workshop 28 Oct · MPA 11 Nov · HRD 17 Nov, 9 Dec. Times ET. The in-person Fall Open House on 20 Oct is not listed as giving a waiver.",url:"https://www.villanova.edu/university/liberal-arts-sciences/graduate-studies/news-events.html"},
   {school:"Babson College",unit:"Graduate School of Business",c:"US",st:"MA",level:"Graduate",fmt:"virtual",dates:["2026-10-14"],event:"Graduate Open House, 9:30am–1:30pm ET",waiver:"Attendees get an automatic fee waiver, added to their account within two business days",note:"MBA, MSEL, MSF and MSBA programs.",url:"https://www.babson.edu/grad/graduate-open-house/"},
   {school:"Seton Hall University",unit:"Graduate Affairs",c:"US",st:"NJ",level:"Graduate",fmt:"in-person",dates:["2026-10-14"],event:"Graduate Open House, 6pm, Bethany Hall, South Orange",waiver:"Attendees receive an application fee waiver",note:"The waiver is stated in the page summary; the page body gives no terms.",url:"https://www.shu.edu/graduate-affairs/open-house.html"},
@@ -181,11 +193,28 @@ const EVENTS = [
   {school:"Georgian College",unit:"College (Barrie, Midland, Orangeville, Owen Sound campuses)",c:"CA",st:"ON",level:"Undergraduate",fmt:"in-person",dates:["2026-11-14"],event:"Fall Open House",waiver:"Georgian covers the OCAS application fee ($150) if you select a Georgian program on your OCAS application on Open House day",note:"College. 9 a.m.–2 p.m. One fee covered per person; international attendees can also apply for free.",url:"https://www.georgiancollege.ca/news-events/all-events/open-house/"},
   {school:"École de technologie supérieure (ÉTS)",unit:"Bachelor's programs, Montréal",c:"CA",st:"QC",level:"Undergraduate",fmt:"in-person",dates:["2026-11-14"],event:"Journée portes ouvertes (open house), 9:30am–4pm",waiver:"Application is free when submitted during the open house",note:"For bachelor's, University Pathway in Technology or preparatory-year applicants who hold a Quebec college diploma, have never been admitted to these programs, and plan to start in Winter or Fall 2027. Page in French.",url:"https://www.etsmtl.ca/etudier-a-lets/futurs-etudiants/info-programme/portes-ouvertes"},
   {school:"Vanguard College",unit:"Admissions",c:"CA",st:"AB",level:"Undergraduate",fmt:"in-person",dates:["2026-11-17"],event:"Preview Day, 8:30am–3pm, Edmonton",waiver:"All attendees get the application fee waived",note:"Attendees also get a $300 tuition bursary on acceptance. A private Christian college rather than a university.",url:"https://www.vanguardcollege.com/admissions/visit-campus/preview-days"},
+  {school:"Northeastern University",unit:"MS in Applied Behavior Analysis",c:"US",st:"MA",level:"Graduate",fmt:"virtual",dates:["2026-11-17"],event:"MS in Applied Behavior Analysis information webinar, 6–7pm ET",waiver:"Receive an application fee waiver after you attend",note:"Program offered fully online and Charlotte hybrid.",url:"https://graduate.northeastern.edu/events/master-of-science-in-applied-behavior-analysis-information-webinar-5/2026-11-17/"},
   {school:"University of San Francisco",unit:"MS in Data Science & AI (College of Arts and Sciences)",c:"US",st:"CA",level:"Graduate",fmt:"virtual",dates:["2026-12-01","2027-01-12","2027-02-17","2027-03-18"],event:"Online application workshops and info sessions",waiver:"Attend to receive a $55 application fee waiver",note:"Application workshops 1 Dec and 17 Feb; info sessions 12 Jan and 18 Mar. Times US Pacific.",url:"https://gradapply.usfca.edu/portal/cas-msan-info-sessions"},
   {school:"University of Massachusetts Amherst",unit:"Isenberg School of Management (Online & Hybrid MBA)",c:"US",st:"MA",level:"Graduate",fmt:"virtual",dates:["2026-12-03"],event:"Online & Hybrid MBA Virtual Information Session, 12–1pm",waiver:"All attendees receive an Online/Hybrid MBA application fee waiver",note:"Do not pay when applying; the waiver is applied within 3–5 business days.",url:"https://www.isenberg.umass.edu/calendar/online-hybrid-mba-virtual-information-session-4"},
   {school:"University of Michigan",unit:"School of Information",c:"US",st:"MI",level:"Graduate",fmt:"virtual",dates:["2026-12-18"],event:"Apply to / Explore the MSI and MHI sessions",waiver:"Attend live; waiver sent after the session",note:"Recurring through spring 2027 for the Fall 2027 cycle.",url:"https://sessions.studentlife.umich.edu/list?department=10"},
   {school:"New Brunswick College of Craft and Design",unit:"College (Fredericton)",c:"CA",st:"NB",level:"Undergraduate",fmt:"in-person",dates:["2027-02-27"],event:"Winter Open House, 12–4pm",waiver:"Reduced application fee ($50 domestic, $100 international off) for attendees who submit a Fall 2027 application at the event or during the following week",note:"College.",url:"https://nbccd.ca/2026/09/winter-open-house-2027/"},
   {school:"UMass Lowell",unit:"Graduate, Online & Professional Studies",c:"US",st:"MA",level:"Graduate",fmt:"virtual",dates:["2027-03-20"],event:"Graduate Virtual Open House, 10am–12pm ET",waiver:"Waiver available to qualified attendees",note:"",url:"https://gps.uml.edu/advising/virtual-open-house.cfm"}
+];
+
+/* ==== PUBLIC CODES (published openly on official pages) ==== */
+const CO_FREE="https://highered.colorado.gov/colorado-free-application-day-instructions";
+const CO_NOTE="Colorado Free Application Days: submit by midnight 22 Oct 2026. Eligibility varies by school.";
+const CODES = [
+  {school:"University of Colorado Boulder",c:"US",st:"CO",level:"Undergraduate",code:"FreeAppDaysCO",from:"2026-10-20",until:"2026-10-22",terms:"Enter in the Common App to waive the application fee. Colorado residents or applicants with a Colorado connection",note:CO_NOTE,url:CO_FREE},
+  {school:"University of Colorado Denver",c:"US",st:"CO",level:"Undergraduate",code:"FreeAppDaysCO",from:"2026-10-20",until:"2026-10-22",terms:"Enter in Milo's App or the Common App to waive the application fee. Colorado residents or applicants with a Colorado connection",note:CO_NOTE,url:CO_FREE},
+  {school:"University of Northern Colorado",c:"US",st:"CO",level:"Undergraduate",code:"FREEAPPDAYCO",from:"2026-10-20",until:"2026-10-22",terms:"Waives the application fee",note:CO_NOTE,url:CO_FREE},
+  {school:"Fort Lewis College",c:"US",st:"CO",level:"Undergraduate",code:"FREEAPPDAYSCO",from:"2026-10-20",until:"2026-10-22",terms:"Waives the application fee",note:CO_NOTE,url:CO_FREE},
+  {school:"Colorado State University Pueblo",c:"US",st:"CO",level:"Undergraduate",code:"FreeAppDayCO",from:"2026-10-20",until:"2026-10-22",terms:"Enter on the Fee Waiver page of the application",note:CO_NOTE,url:CO_FREE},
+  {school:"Colorado State University Global",c:"US",st:"CO",level:"Undergraduate",code:"FREEAPPDAY",from:"2026-10-20",until:"2026-10-22",terms:"Promo code waives the application fee",note:CO_NOTE,url:CO_FREE},
+  {school:"University of Denver",c:"US",st:"CO",level:"Undergraduate",code:"COFreeApp26",from:"2026-10-20",until:"2026-10-22",terms:"Enter in the Common App to waive the application fee",note:CO_NOTE,url:CO_FREE},
+  {school:"Colorado Christian University",c:"US",st:"CO",level:"Undergraduate",code:"GOCCU",from:"2026-10-20",until:"2026-10-22",terms:"Promo code on the payment screen",note:CO_NOTE,url:CO_FREE},
+  {school:"Naropa University",c:"US",st:"CO",level:"Undergraduate",code:"FREEAPPDAY",from:"2026-10-20",until:"2026-10-22",terms:"Waives the application fee",note:CO_NOTE,url:CO_FREE},
+  {school:"Ohio State University regional campuses",c:"US",st:"OH",level:"Undergraduate",code:"RCW2027",from:"2026-10-01",until:"2026-12-01",terms:"Waives the $60 fee for first-year applicants who apply directly to Lima, Mansfield, Marion, Newark or ATI (Wooster)",note:"Columbus campus applicants use the Common App instead; this code does not apply there.",url:"https://lima.osu.edu/story/news-app-fee-waiver-2026"},
 ];
 
 const today = new Date(); today.setHours(0,0,0,0);
@@ -276,8 +305,26 @@ form.addEventListener("submit",ev=>{
     note.className="formnote"; note.textContent="The mailing list opens soon. Bookmark this page in the meantime; it updates daily.";
   }
 });
+
+function renderCodes(){
+  const rows=CODES.filter(k=>parse(k.until)>=today).sort((a,b)=>parse(a.until)-parse(b.until)||a.school.localeCompare(b.school));
+  const fmtD=x=>{const d=parse(x);return `${d.getDate()} ${MONTHS[d.getMonth()]}`;};
+  document.getElementById("codes").innerHTML=rows.length?rows.map(k=>{
+    const open=parse(k.from)<=today;
+    return `<li>
+      <div class="date"><b>${open?"Until":"From"} ${open?fmtD(k.until):fmtD(k.from)}</b>${open?"":"to "+fmtD(k.until)}</div>
+      <div>
+        <p class="school">${esc(k.school)}</p>
+        <p class="meta">${esc(PLACE[k.st]||k.st)}, ${k.c==="CA"?"Canada":"US"} · ${esc(k.level)}</p>
+        <p class="waiver">Code <span class="code">${esc(k.code)}</span> ${esc(k.terms)}.</p>
+        ${k.note?`<p class="more">${esc(k.note)}</p>`:""}
+        <div class="row"><a href="${k.url}" target="_blank" rel="noopener">Official source ↗</a></div>
+      </div></li>`;
+  }).join(""):`<p class="empty">No public codes are active right now.</p>`;
+}
 fillStates();
 render();
+renderCodes();
 </script>
 </body>
 </html>
